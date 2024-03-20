@@ -5,6 +5,7 @@ import visual.Map;
 import java.util.Scanner;
 
 public class Main {
+    //frico e frice
     private static final int INTERACTIONS = 6;
     private static Map m;
 
