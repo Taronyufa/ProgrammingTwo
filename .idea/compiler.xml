@@ -9,8 +9,5 @@
         <module name="p2lab-mc" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="p2lab-mc" target="17" />
-    </bytecodeTargetLevel>
   </component>
 </project>
