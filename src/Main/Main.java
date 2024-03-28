@@ -10,8 +10,9 @@ public class Main {
     private static Map m;
 
     public static void main(String[] args){
-//        change_at_coords();
+        // change_at_coords();
         test_gravity();
+        // test_water();
     }
 
     // ask for user input to change specific coordinates to a block 'A'
@@ -27,24 +28,32 @@ public class Main {
             int col = myObj.nextInt();
 
             System.out.println("Setting default for: "+row+" - "+col);
-            m.change_cell_with_A(row,col);
+            m.change_cell_with_random(row,col);
+
 
             m.display_on_out();
         }
     }
 
     private static void test_gravity(){
-        m = new Map(false);
+        m = new Map();
         m.display_on_out();
-        for (int i = 0 ; i < INTERACTIONS ; i++){
+        // for (int i = 0 ; i < INTERACTIONS ; i++){
             System.out.print("Enter column where to drop a block: ");
             Scanner myObj = new Scanner(System.in);
             int col = myObj.nextInt();
 
             System.out.println("Dropping a new block in column: "+col);
-            m.change_cell_with_A(0,col);
 
+            m.change_cell_with_A(0,col, 1);
             m.display_on_out();
-        }
+        // }
     }
+
+    private static void test_water(){
+        m = new Map();
+        m.display_on_out();
+
+    }
+
 }

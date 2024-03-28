@@ -1,35 +1,32 @@
 package visual;
 
-import data.Block;
-import data.BlockFactory;
+import data.*;
+import data.Blocks.AirBlock;
+import data.Blocks.WaterBlock;
+import data.Interfaces.Block;
 
 public class Map {
     private static final int DIMENSION_COLUMNS = 10;
     private static final int DIMENSION_ROWS = 5;
-
     private Block[][] content;
     private BlockFactory bf;
 
-    // the default map is a random one
-    public Map(){
-        this(true);
-    }
-
     // create a Map, and tell it whether it needs to be made of random blocks or not
-    public Map(boolean random){
-        content = new Block[DIMENSION_ROWS][DIMENSION_COLUMNS];
+    public Map(){
         bf = new BlockFactory();
+
+        content = new Block[DIMENSION_ROWS][DIMENSION_COLUMNS];
+        
+        Block b;
         for (int i = 0 ; i < DIMENSION_ROWS; i++){
-            for (int k = 0 ; k < DIMENSION_COLUMNS; k++){
-                Block b = null;
-                if (random) {
-                    b = bf.random_block();
-                } else {
-                    b = bf.default_block();
-                }
-                this.insert_block_at_coords(b,i,k,false);
+            for (int j = 0 ; j < DIMENSION_COLUMNS; j++){
+                b = new AirBlock();
+                this.insert_block_at_coords(b,i,j,false);
             }
         }
+
+        addRowsOfWater();
+
     }
 
     // this is a centralised insertion, to be done at allocation,
@@ -50,6 +47,7 @@ public class Map {
         // and the row+1-col is fall through
         // swap row-col and row+1-col
     }
+
     private void move_rec(int row, int col){
         if (row == Map.DIMENSION_ROWS-1){
             return;
@@ -75,20 +73,19 @@ public class Map {
             this.swap(i,col);
         }
     }
+
     private void move_iter_while(int row, int col){
-        int indx = row;
-        while (this.content[indx][col].isFalls_with_gravity()
-                && indx+1 < DIMENSION_ROWS
-                && this.content[indx+1][col].isFall_through()){
-            this.swap(indx,col);
-            indx++;
+        while (this.content[row][col].isFalls_with_gravity()
+                && row+1 < DIMENSION_ROWS
+                && this.content[row+1][col].isFall_through()){
+            this.swap(row,col);
+            row++;
         }
     }
 
     // precondition: row and col are valid, and so are for the next
     private void swap(int row, int col){
-        Block b = null;
-        b = this.content[row][col];
+        Block b = this.content[row][col];
         this.content[row][col] = this.content[row+1][col];
         this.content[row+1][col] = b;
     }
@@ -108,12 +105,40 @@ public class Map {
         System.out.println("|============|");
     }
 
-    // change a cell with a fixed block 'A'
-    public void change_cell_with_A(int row, int col){
+    // change a cell with a given block
+    public void change_cell_with_A(int row, int col, int block){
         if (row >= DIMENSION_ROWS || col >= DIMENSION_COLUMNS){
             return;
         }
-        Block b = bf.block_to_A();
+        Block b = bf.block_to_A(block);
         this.insert_block_at_coords(b,row,col,true);
     }
+
+    // change a cell with a random block
+    public void change_cell_with_random(int row, int col){
+        if (row >= DIMENSION_ROWS || col >= DIMENSION_COLUMNS){
+            return;
+        }
+        Block b = bf.random_block();
+        this.insert_block_at_coords(b,row,col,true);
+    }
+
+    private void addRowsOfWater(){
+        Block water;
+        for(int i = 0; i < this.DIMENSION_COLUMNS; i++){
+            water = new WaterBlock();
+            insert_block_at_coords(water, 0, i, true);
+        }
+    }
+
+    public void addRiver(){
+        addRowsOfWater();
+    }
+
+    public void addSea(){
+        for(int i = 0; i < 3; i++){
+            addRowsOfWater();
+        }
+    }
 }
+
