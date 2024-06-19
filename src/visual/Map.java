@@ -2,12 +2,17 @@ package visual;
 
 import data.*;
 import data.Blocks.AirBlock;
+import data.Blocks.SandBlock;
 import data.Blocks.WaterBlock;
 import data.Interfaces.Block;
+import data.Interfaces.SmeltableBlock;
+
+import java.util.Random;
 
 public class Map {
     private static final int DIMENSION_COLUMNS = 10;
     private static final int DIMENSION_ROWS = 5;
+    private static final int RANDOM_BLOCKS_TO_ADD = 7;
     private Block[][] content;
     private BlockFactory bf;
 
@@ -26,7 +31,27 @@ public class Map {
         }
 
         addRowsOfWater();
+        randCell();
 
+    }
+
+    // getter
+    public SmeltableBlock getSmeltable(int row, int col){
+        return (SmeltableBlock)this.content[row][col];
+    }
+
+    // methods
+    public boolean isSmeltable(int row, int col){
+        return (this.content[row][col] instanceof SmeltableBlock);
+    }
+
+    public void setAir(int row, int col){
+        this.content[row][col] = new AirBlock();
+        for(int i = 0; i < row; i++){
+            if(this.content[i][col].isFalls_with_gravity()){
+                this.move(i,col);
+            }
+        }
     }
 
     // this is a centralised insertion, to be done at allocation,
@@ -39,8 +64,8 @@ public class Map {
     }
 
     private void move(int row, int col){
-//        move_rec(row, col);
-//        move_iter_for(row,col);
+        // move_rec(row, col);
+        // move_iter_for(row,col);
         move_iter_while(row,col);
         // until row is less than row
         // if the row-col falls with gravity
@@ -123,11 +148,13 @@ public class Map {
         this.insert_block_at_coords(b,row,col,true);
     }
 
-    private void addRowsOfWater(){
-        Block water;
-        for(int i = 0; i < this.DIMENSION_COLUMNS; i++){
-            water = new WaterBlock();
-            insert_block_at_coords(water, 0, i, true);
+    private void randCell(){
+        Random rand = new Random();
+        for (int i = 0 ; i < RANDOM_BLOCKS_TO_ADD; i++){
+            Block b = new SandBlock();
+            int row = rand.nextInt(DIMENSION_ROWS);
+            int col = rand.nextInt(DIMENSION_COLUMNS);
+            this.content[row][col] = b;
         }
     }
 
@@ -138,6 +165,14 @@ public class Map {
     public void addSea(){
         for(int i = 0; i < 3; i++){
             addRowsOfWater();
+        }
+    }
+
+    private void addRowsOfWater(){
+        Block water;
+        for(int i = 0; i < this.DIMENSION_COLUMNS; i++){
+            water = new WaterBlock();
+            insert_block_at_coords(water, 0, i, true);
         }
     }
 }
